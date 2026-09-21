@@ -10,7 +10,13 @@ Panel {
   ipcTarget: "martinh.weather-globe"
 
   readonly property string home: Quickshell.env("HOME")
-  readonly property string pkgDir: home + "/.config/omarchy/weather-globe"
+  // This plugin's own install directory, resolved from where this QML file
+  // itself was loaded from rather than hardcoded -- works whether it's
+  // installed via install.sh (symlinked into ~/.config/omarchy/plugins/) or
+  // cloned directly by `omarchy plugin add` to wherever it chooses. Same
+  // Qt.resolvedUrl() mechanism the built-in weather widget already uses to
+  // find its sibling Panel.qml.
+  readonly property string pkgDir: urlToPath(Qt.resolvedUrl("."))
   readonly property string stateDir: home + "/.local/state/omarchy/weather-globe"
   readonly property string scriptPath: pkgDir + "/render.sh"
   readonly property string setProjectionPath: pkgDir + "/set-projection.sh"
@@ -46,6 +52,13 @@ Panel {
   property real lastEpoch: 0
   property string lastLine: ""
   property string nowLabel: "never run"
+
+  function urlToPath(url) {
+    var s = String(url || "")
+    if (s.indexOf("file://") === 0) s = s.slice(7)
+    s = decodeURIComponent(s)
+    return s.replace(/\/$/, "")
+  }
 
   function refresh() {
     if (refreshProc.running) return

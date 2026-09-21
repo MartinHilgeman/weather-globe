@@ -4,8 +4,14 @@
 # (NASA GIBS IMERG) overlaid, then sets it as the Omarchy desktop background.
 set -uo pipefail
 
+# State (rendered wallpapers, logs, toggle files, the city dataset) always
+# lives in one fixed place regardless of where this package itself is
+# installed. CONFIG_DIR is this script's own directory, resolved at runtime
+# -- not hardcoded -- so the package works whether it's installed via
+# install.sh (symlinked into place) or cloned directly by `omarchy plugin
+# add` (which places the whole repo at an install-tool-chosen path).
 STATE_DIR="$HOME/.local/state/omarchy/weather-globe"
-CONFIG_DIR="$HOME/.config/omarchy/weather-globe"
+CONFIG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG="$STATE_DIR/render.log"
 mkdir -p "$STATE_DIR"
 

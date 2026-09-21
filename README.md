@@ -9,6 +9,7 @@ automatically every 30 minutes.
 ## Install
 
 ```bash
+git clone https://github.com/MartinHilgeman/weather-globe.git ~/.config/omarchy/weather-globe
 ~/.config/omarchy/weather-globe/install.sh
 ```
 
@@ -22,6 +23,23 @@ with:
 ```bash
 omarchy bar move $(id -un).weather-globe --section right
 ```
+
+Passes `omarchy plugin validate` and the widget resolves its own install
+directory at runtime (via `Qt.resolvedUrl(".")` in the QML, and
+`$(dirname "${BASH_SOURCE[0]}")` in `render.sh`), so the bar-widget half
+can also be added the normal Omarchy way:
+
+```bash
+omarchy plugin add https://github.com/MartinHilgeman/weather-globe.git --enable
+```
+
+Note that `omarchy plugin add` alone only registers the bar widget — it
+doesn't create the systemd timer, download the city dataset, or do the
+first render, since a plugin-only install has no hook for any of that. Run
+`install.sh` (as above, from your own clone) at least once to get those
+running. Each install path is self-sufficient (the widget always finds its
+sibling scripts relative to wherever it was actually loaded from), so use
+whichever one fits — there's no need to do both.
 
 ## Uninstall
 
@@ -53,7 +71,7 @@ reads on every run.
 ## Temperature markers
 
 A "Show temperature" toggle (only meaningful while Zoom to location is
-also on) labels your weather location plus up to 3 nearby notable cities
+also on) labels your weather location plus up to 8 nearby notable cities
 that fall within the current zoomed view, in the format `<City> <Temp>°C`
 — e.g. "Amstelveen 18°C". Temperatures come from wttr.in (the same free,
 keyless service used for zoom's location lookup); the nearby cities come
@@ -69,15 +87,22 @@ Persisted the same way as the other settings, via `set-temperature.sh` →
 ## Layout
 
 ```
-render.sh              # fetch imagery, composite, render with xplanet, set background
-xplanet.config         # xplanet earth body config (day/night maps)
-set-projection.sh      # persists the Projection dropdown choice
-set-zoom.sh            # persists the Zoom to location toggle
-set-temperature.sh     # persists the Show temperature toggle
-systemd/                # user service + timer, symlinked into ~/.config/systemd/user
-plugin/                 # bar widget (manifest.json + WeatherGlobe.qml), symlinked into
-                        # ~/.config/omarchy/plugins/<you>.weather-globe
+manifest.json           # plugin manifest -- must stay at repo root for `omarchy plugin add`
+WeatherGlobe.qml         # bar widget: status, Projection, Zoom, Show temperature
+render.sh               # fetch imagery, composite, render with xplanet, set background
+xplanet.config          # xplanet earth body config (day/night maps)
+set-projection.sh       # persists the Projection dropdown choice
+set-zoom.sh             # persists the Zoom to location toggle
+set-temperature.sh      # persists the Show temperature toggle
+systemd/                 # user service + timer, symlinked into ~/.config/systemd/user
+                         # by install.sh
 ```
+
+`install.sh` symlinks this whole repo into
+`~/.config/omarchy/plugins/<you>.weather-globe`; `omarchy plugin add`
+clones it there directly instead. Either way `WeatherGlobe.qml` and
+`render.sh` resolve their own directory at runtime rather than assuming a
+fixed path, so both installs work the same.
 
 Rendered output, the composited source imagery, `render.log`, the
 GeoNames city dataset (`cities15000.txt`), and the generated

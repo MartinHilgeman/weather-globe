@@ -37,7 +37,7 @@ systemctl --user daemon-reload
 systemctl --user enable --now weather-globe.timer
 
 if [[ ! -e "$PLUGINS_DIR/$PLUGIN_ID" ]]; then
-  ln -s "$PKG_DIR/plugin" "$PLUGINS_DIR/$PLUGIN_ID"
+  ln -s "$PKG_DIR" "$PLUGINS_DIR/$PLUGIN_ID"
 fi
 
 if command -v omarchy-shell &>/dev/null; then
