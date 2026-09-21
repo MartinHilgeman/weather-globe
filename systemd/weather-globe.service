@@ -1,0 +1,6 @@
+[Unit]
+Description=Render live-weather xplanet desktop background
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/omarchy/weather-globe/render.sh

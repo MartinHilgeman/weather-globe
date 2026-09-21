@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "martinh.weather-globe",
+  "name": "Weather Globe",
+  "version": "1.0.0",
+  "author": "martinh",
+  "description": "Live-weather xplanet globe wallpaper status and manual refresh",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "WeatherGlobe.qml"
+  },
+  "barWidget": {
+    "displayName": "Weather Globe",
+    "description": "Shows when the weather-globe wallpaper last refreshed; click to refresh now",
+    "category": "Info",
+    "allowMultiple": false
+  }
+}
